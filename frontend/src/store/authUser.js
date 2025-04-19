@@ -44,10 +44,11 @@ export const useAuthStore = create((set) => ({
 		set({ isCheckingAuth: true });
 		try {
 			const response = await axios.get("/api/v1/auth/authCheck");
+
 			set({ user: response.data.user, isCheckingAuth: false });
-		} catch {
+		} catch (error) {
 			set({ isCheckingAuth: false, user: null });
-			// You can choose to remove error handling altogether if not needed
+			// toast.error(error.response.data.message || "An error occurred");
 		}
-	},	
+	},
 }));
