@@ -2,62 +2,54 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { create } from "zustand";
 
-// Setup axios
-axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
-axios.defaults.withCredentials = true;
-
 export const useAuthStore = create((set) => ({
-  user: null,
-  isSigningUp: false,
-  isCheckingAuth: true,
-  isLoggingOut: false,
-  isLoggingIn: false,
+	user: null,
+	isSigningUp: false,
+	isCheckingAuth: true,
+	isLoggingOut: false,
+	isLoggingIn: false,
+	signup: async (credentials) => {
+		set({ isSigningUp: true });
+		try {
+			const response = await axios.post("/api/v1/auth/signup", credentials);
+			set({ user: response.data.user, isSigningUp: false });
+			toast.success("Account created successfully");
+		} catch (error) {
+			toast.error(error.response.data.message || "Signup failed");
+			set({ isSigningUp: false, user: null });
+		}
+	},
+	login: async (credentials) => {
+		set({ isLoggingIn: true });
+		try {
+			const response = await axios.post("/api/v1/auth/login", credentials);
+			set({ user: response.data.user, isLoggingIn: false });
+		} catch (error) {
+			set({ isLoggingIn: false, user: null });
+			toast.error(error.response.data.message || "Login failed");
+		}
+	},
+	logout: async () => {
+		set({ isLoggingOut: true });
+		try {
+			await axios.post("/api/v1/auth/logout");
+			set({ user: null, isLoggingOut: false });
+			toast.success("Logged out successfully");
+		} catch (error) {
+			set({ isLoggingOut: false });
+			toast.error(error.response.data.message || "Logout failed");
+		}
+	},
+	authCheck: async () => {
+		set({ isCheckingAuth: true });
+		try {
+			const response = await axios.get("/api/v1/auth/authCheck");
 
-  signup: async (credentials) => {
-    set({ isSigningUp: true });
-    try {
-      const { data } = await axios.post("/api/v1/auth/signup", credentials);
-      set({ user: data.user, isSigningUp: false });
-      toast.success("Account created successfully");
-    } catch (error) {
-      console.error("Signup error:", error.response);
-      toast.error(error.response?.data?.message || "Signup failed");
-      set({ isSigningUp: false, user: null });
-    }
-  },
-
-  login: async (credentials) => {
-    set({ isLoggingIn: true });
-    try {
-      const { data } = await axios.post("/api/v1/auth/login", credentials);
-      set({ user: data.user, isLoggingIn: false });
-    } catch (error) {
-      console.error("Login error:", error.response);
-      toast.error(error.response?.data?.message || "Login failed");
-      set({ isLoggingIn: false, user: null });
-    }
-  },
-
-  logout: async () => {
-    set({ isLoggingOut: true });
-    try {
-      await axios.post("/api/v1/auth/logout");
-      set({ user: null, isLoggingOut: false });
-      toast.success("Logged out successfully");
-    } catch (error) {
-      set({ isLoggingOut: false });
-      toast.error(error.response?.data?.message || "Logout failed");
-    }
-  },
-
-  authCheck: async () => {
-    set({ isCheckingAuth: true });
-    try {
-      const { data } = await axios.get("/api/v1/auth/authCheck");
-      set({ user: data.user, isCheckingAuth: false });
-    } catch (error) {
-      console.error("AuthCheck error:", error.response);
-      set({ user: null, isCheckingAuth: false });
-    }
-  },
+			set({ user: response.data.user, isCheckingAuth: false });
+		// eslint-disable-next-line no-unused-vars
+		} catch (error) {
+			set({ isCheckingAuth: false, user: null });
+			// toast.error(error.response.data.message || "An error occurred");
+		}
+	},
 }));
