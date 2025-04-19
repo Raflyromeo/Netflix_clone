@@ -46,7 +46,6 @@ export const useAuthStore = create((set) => ({
 			const response = await axios.get("/api/v1/auth/authCheck");
 
 			set({ user: response.data.user, isCheckingAuth: false });
-		// eslint-disable-next-line no-unused-vars
 		} catch (error) {
 			set({ isCheckingAuth: false, user: null });
 			// toast.error(error.response.data.message || "An error occurred");
