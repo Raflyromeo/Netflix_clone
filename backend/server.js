@@ -1,7 +1,7 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import path from "path";
-import cors from "cors"; // ⬅️ Tambahkan ini
+import cors from "cors"; // ⬅️ Sudah ditambahkan
 
 import authRoutes from "./routes/auth.route.js";
 import movieRoutes from "./routes/movie.route.js";
@@ -16,21 +16,14 @@ const app = express();
 const PORT = ENV_VARS.PORT;
 const __dirname = path.resolve();
 
-// ✅ CORS setup
+// ✅ CORS setup (versi array langsung)
 const allowedOrigins = [
   "http://localhost:5173",
   "https://netflix-clone-romynazty-git-main-raflyromeos-projects.vercel.app",
 ];
 
 app.use(cors({
-  origin: function (origin, callback) {
-    // allow requests with no origin (like mobile apps, curl, etc.)
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
+  origin: allowedOrigins,
   credentials: true,
 }));
 
