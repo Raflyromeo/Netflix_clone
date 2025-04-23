@@ -16,6 +16,8 @@ const app = express();
 const PORT = ENV_VARS.PORT;
 const __dirname = path.resolve();
 
+export const backend_url = "https://netplik-api.vercel.app/api";
+
 app.use(express.json()); // will allow us to parse req.body
 app.use(cookieParser());
 
